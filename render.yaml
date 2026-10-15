@@ -16,3 +16,9 @@ services:
         sync: false   # Neon 연결 문자열
       - key: ONEID_URL
         sync: false   # 예: https://oneid.onrender.com
+      - key: ONEID_ALLOWED_ORIGINS
+        sync: false   # 필수: https://도메인.onrender.com,https://oneid.onrender.com,https://fakepress-1.onrender.com,https://inkvoid-eoqx.onrender.com,https://pigsty.onrender.com,https://nova-hmqj.onrender.com
+      - key: ONEID_CLIENT_REDIRECT_URIS
+        sync: false   # 필수: {"neonstrip":["https://fakepress-1.onrender.com/","https://inkvoid-eoqx.onrender.com/","https://pigsty.onrender.com/","https://nova-hmqj.onrender.com/","https://nova-hmqj.onrender.com/login.html"]}
+      - key: PORT
+        value: "5504"
