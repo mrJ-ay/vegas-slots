@@ -1,0 +1,17 @@
+{
+  "name": "neon-strip-slots",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vegas × LA neon slot machine with real user-to-user lending (Neon Postgres + ONEID SSO, Render)",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --watch --env-file-if-exists=.env server.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.13.0",
+    "ws": "^8.18.0"
+  }
+}

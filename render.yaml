@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: neon-strip
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: ONEID_CLIENT_ID
+        value: neonstrip
+      - key: DATABASE_URL
+        sync: false   # Neon 연결 문자열
+      - key: ONEID_URL
+        sync: false   # 예: https://oneid.onrender.com

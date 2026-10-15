@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEON STRIP — Vegas × LA Slots</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Bungee&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="sky"></div>
+<div class="palms"><span>🌴</span><span>🌴</span></div>
+
+<!-- 로그인 게이트 -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <h1 class="neon-title">NEON STRIP</h1>
+    <p class="subtitle">LAS VEGAS ✦ LOS ANGELES</p>
+    <p class="gate-text">유저끼리 돈을 빌려주고, 빌리고, 터뜨리는 카지노.</p>
+    <button class="btn spin" id="loginBtn">ONEID로 입장</button>
+    <p class="gate-msg" id="gateMsg"></p>
+  </div>
+</div>
+
+<header>
+  <h1 class="neon-title">NEON STRIP</h1>
+  <p class="subtitle">LAS VEGAS ✦ LOS ANGELES</p>
+  <div class="userbar">
+    <span>😎 <b id="meName">-</b></span>
+    <span class="dot-online">접속 <b id="onlineCount">0</b>명</span>
+    <button class="link" id="logoutBtn">로그아웃</button>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- 왼쪽: 지갑 & 장부 -->
+  <section class="panel wallet">
+    <h2>💼 내 지갑</h2>
+    <div class="stat"><span>잔고</span><b id="balance">$0</b></div>
+    <div class="stat"><span>갚을 돈</span><b id="totalDebt" class="debt">$0</b></div>
+    <div class="stat"><span>받을 돈</span><b id="receivable">$0</b></div>
+    <div class="stat small"><span>게시글에 묶인 돈</span><b id="escrow">$0</b></div>
+    <div class="stat"><span>순자산</span><b id="netWorth">$0</b></div>
+    <div class="stat"><span>신용점수</span><b id="credit">0</b></div>
+    <div class="credit-bar"><div id="creditFill"></div></div>
+    <div class="stat small"><span>랭킹</span><b id="myRankTop">-</b></div>
+    <div class="stat small"><span>스핀 / 파산</span><b id="spinCount">0</b></div>
+    <div id="newbieNote" class="hint warn" hidden></div>
+    <button id="bankruptBtn" class="btn danger" hidden>💀 파산 신청 ($1,000 재시작)</button>
+
+    <h2>📜 갚을 돈</h2>
+    <div id="borrowedList" class="loan-list"></div>
+
+    <h2>💰 받을 돈</h2>
+    <div id="lentList" class="loan-list"></div>
+
+    <h2>📌 내 게시글</h2>
+    <div id="myOffers" class="loan-list"></div>
+  </section>
+
+  <!-- 가운데: 슬롯머신 -->
+  <section class="machine-wrap">
+    <div class="machine">
+      <div class="marquee" id="marquee">
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+      </div>
+      <div class="jackpot">JACKPOT <b id="jackpot">$0</b> <small>전 유저 공유</small></div>
+      <div class="reels-frame">
+        <div class="reels" id="reels">
+          <div class="reel"><div class="strip"></div></div>
+          <div class="reel"><div class="strip"></div></div>
+          <div class="reel"><div class="strip"></div></div>
+        </div>
+        <svg class="lines" id="lines" viewBox="0 0 300 300" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="message" id="message">레버를 당겨라, 베이비 🎲</div>
+
+      <div class="controls">
+        <div class="bet-box">
+          <button id="betDown" class="btn small">−</button>
+          <div class="bet"><span>BET</span><b id="bet">$10</b></div>
+          <button id="betUp" class="btn small">+</button>
+        </div>
+        <button id="maxBet" class="btn ghost">MAX</button>
+        <button id="spinBtn" class="btn spin">SPIN</button>
+        <label class="auto"><input type="checkbox" id="autoSpin" /> AUTO</label>
+      </div>
+    </div>
+
+    <details class="paytable">
+      <summary>💰 배당표 (라인당 배팅 × 배수, 5라인)</summary>
+      <div id="paytable"></div>
+    </details>
+
+    <section class="online-rank">
+      <div class="rank-head">
+        <h2>🌐 랭킹 <small>순자산 = 잔고 + 받을 돈 − 갚을 돈</small></h2>
+        <span class="mode online">LIVE</span>
+      </div>
+      <ol id="onlineBoard" class="rank-list"></ol>
+    </section>
+  </section>
+
+  <!-- 오른쪽: 대출 시장 -->
+  <section class="panel market">
+    <div class="tabs">
+      <button class="tab active" data-tab="p2p">🤝 유저 마켓</button>
+      <button class="tab" data-tab="npc">🦈 NPC 사채</button>
+    </div>
+
+    <div class="tab-body" id="tab-p2p">
+      <p class="hint">진짜 유저에게 빌리고 빌려줍니다. 이자는 <b>실제 시간</b>으로 붙고, 연체하면 돈을 딸 때마다 <b>자동 압류</b>됩니다.</p>
+      <div class="market-actions">
+        <button class="btn" id="newLendBtn">💼 빌려주기 글</button>
+        <button class="btn ghost" id="newBorrowBtn">🙏 구해요 글</button>
+      </div>
+      <div class="subtabs">
+        <button class="subtab active" data-kind="lend">빌려줄게요</button>
+        <button class="subtab" data-kind="borrow">구해요</button>
+      </div>
+      <div id="marketList" class="offer-list"></div>
+    </div>
+
+    <div class="tab-body" id="tab-npc" hidden>
+      <p class="hint">유저가 없을 때 쓰는 카지노 사채업자들. 24시간 넘게 연체하면 블랙리스트 🦈</p>
+      <div id="lenderList" class="lender-list"></div>
+    </div>
+
+    <h2>📡 카지노 소식</h2>
+    <ul id="feed" class="feed"></ul>
+  </section>
+</main>
+
+<!-- NPC 대출 모달 -->
+<div class="modal" id="loanModal">
+  <div class="modal-box">
+    <div class="lender-head" id="mLender"></div>
+    <p id="mQuote" class="quote"></p>
+    <div class="terms" id="mTerms"></div>
+    <input type="range" id="mAmount" min="10" max="1000" step="10" />
+    <div class="amount-show">빌릴 금액: <b id="mAmountShow">$0</b></div>
+    <div class="amount-show small">기한 내 상환 예상액: <b id="mRepayShow">$0</b></div>
+    <div class="modal-actions">
+      <button class="btn ghost" data-close>취소</button>
+      <button class="btn spin" id="mConfirm">빌리기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 게시글 작성 모달 -->
+<div class="modal" id="offerModal">
+  <div class="modal-box">
+    <div class="lender-head" id="oTitle"></div>
+    <div class="form">
+      <label>금액 ($)<input type="number" id="oAmount" min="100" step="100" value="1000" /></label>
+      <label>이자 (시간당 %)<input type="number" id="oRate" min="0" max="20" step="0.1" value="2" /></label>
+      <label>기한 (시간)<input type="number" id="oTerm" min="1" max="72" step="1" value="24" /></label>
+      <label id="oMinCreditWrap">최소 신용점수<input type="number" id="oMinCredit" min="300" max="850" step="10" value="500" /></label>
+      <label>한마디 (선택)<input type="text" id="oNote" maxlength="60" placeholder="예: 착하게 갚으면 다음에 또 빌려줌" /></label>
+    </div>
+    <div class="amount-show small">기한 내 총 상환액: <b id="oPreview">$0</b></div>
+    <p class="hint" id="oHint"></p>
+    <div class="modal-actions">
+      <button class="btn ghost" data-close>취소</button>
+      <button class="btn spin" id="oConfirm">올리기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<div class="big-win" id="bigWin"></div>
+<button id="soundBtn" class="sound">🔊</button>
+
+<script src="game.js"></script>
+</body>
+</html>
