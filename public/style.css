@@ -39,7 +39,7 @@ body {
 .palms span { font-size: 220px; filter: brightness(0) drop-shadow(0 0 8px #ff2f8a); opacity: .7; }
 .palms span:last-child { transform: scaleX(-1); }
 
-header { text-align: center; padding: 18px 0 4px; }
+header { position: relative; text-align: center; padding: 18px 0 4px; }
 .neon-title {
   font-family: 'Monoton', cursive; font-weight: 400; margin: 0;
   font-size: clamp(42px, 7vw, 86px); letter-spacing: 6px;
@@ -49,6 +49,83 @@ header { text-align: center; padding: 18px 0 4px; }
 }
 @keyframes flicker { 0%,19%,21%,62%,64%,100% { opacity: 1 } 20%,63% { opacity: .55 } }
 .subtitle { font-family: 'Bungee'; color: var(--cyan); letter-spacing: 8px; margin: 4px 0 0; text-shadow: 0 0 10px var(--cyan); }
+
+/* ---------- 상단 우측 쇼핑몰 바로가기 버튼 ---------- */
+.header-shop-btn {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(35, 10, 60, 0.9), rgba(15, 3, 30, 0.95));
+  border: 2px solid var(--gold);
+  border-radius: 14px;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(255, 210, 63, 0.45), inset 0 0 10px rgba(255, 210, 63, 0.15);
+  backdrop-filter: blur(8px);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 50;
+}
+.header-shop-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 25px rgba(255, 210, 63, 0.8), 0 0 40px rgba(255, 47, 208, 0.4), inset 0 0 14px rgba(255, 210, 63, 0.3);
+  border-color: #ffe680;
+}
+.header-shop-btn .shop-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: var(--pink);
+  color: #fff;
+  font-family: 'Bungee', sans-serif;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  box-shadow: 0 0 10px var(--pink);
+  animation: pulse-badge 1.5s infinite;
+}
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.header-shop-btn .shop-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 0 6px var(--gold));
+  animation: cart-bounce 2s ease-in-out infinite;
+}
+@keyframes cart-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.header-shop-btn .shop-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.header-shop-btn .shop-name {
+  font-family: 'Bungee', 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(255, 210, 63, 0.6);
+}
+.header-shop-btn .shop-desc {
+  font-size: 11px;
+  color: #e0d0f5;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .header-shop-btn {
+    position: static;
+    margin: 12px auto 0;
+    width: fit-content;
+  }
+}
 
 .layout {
   display: grid; grid-template-columns: 300px minmax(380px, 1fr) 330px;
