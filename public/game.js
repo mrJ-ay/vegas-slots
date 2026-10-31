@@ -334,20 +334,39 @@ function renderWallet() {
   if (S.jarketBuffs) renderJarketBuffs(S.jarketBuffs);
 }
 
+async function toggleBuff(itemId, checked) {
+  try {
+    const res = await api('/api/jarket/toggle-buff', {
+      method: 'POST',
+      body: { itemId, isActive: checked }
+    });
+    if (res.jarketBuffs) {
+      S.jarketBuffs = res.jarketBuffs;
+      renderJarketBuffs(S.jarketBuffs);
+      toast(checked ? '⚡ 자켓 스킬 활성화됨!' : '💤 자켓 스킬 비활성화됨', checked ? 'win' : '');
+    }
+  } catch (err) {
+    toast(err.message, 'bad');
+  }
+}
+window.toggleBuff = toggleBuff;
+
 function renderJarketBuffs(buffs) {
   const container = $('jarketBuffTags');
   if (!container) return;
   if (!buffs || !buffs.activeBuffs || !buffs.activeBuffs.length) {
-    container.innerHTML = `<span class="no-buff-tag">보유 버프 없음 (자켓마트에서 아이템을 구매하면 슬롯 배율 최대 10배, 매 스핀 칩 추가, 꽝 환급 보험이 상시 발동됩니다!) <a href="https://jarket.onrender.com" target="_blank" style="color:var(--gold);text-decoration:underline;margin-left:4px;">[쇼핑하러 가기 ↗]</a></span>`;
+    container.innerHTML = `<span class="no-buff-tag">보유 버프 없음 (자켓마트에서 아이템을 구매하면 슬롯 배율 최대 10배, 매 스핀 칩 추가, 꽝 환급 보험이 체크박스로 활성화됩니다!) <a href="https://jarket.onrender.com" target="_blank" style="color:var(--gold);text-decoration:underline;margin-left:4px;">[쇼핑하러 가기 ↗]</a></span>`;
     return;
   }
 
   container.innerHTML = buffs.activeBuffs.map(b => `
-    <span class="jarket-buff-chip" title="${esc(b.name)}">
+    <label class="jarket-buff-chip ${b.isActive ? 'active' : 'inactive'}" title="${esc(b.name)}">
+      <input type="checkbox" class="buff-checkbox" ${b.isActive ? 'checked' : ''} onchange="toggleBuff('${b.id}', this.checked)">
       <span class="buff-chip-icon">${b.icon}</span>
-      <b class="buff-chip-name">${esc(b.name)}</b>
+      <b class="buff-chip-name">${esc(b.name)}${b.quantity > 1 ? ` (${b.quantity}개 중첩)` : ''}</b>
       <span class="buff-chip-desc">${esc(b.desc)}</span>
-    </span>
+      <span class="buff-state-tag">${b.isActive ? 'ON' : 'OFF'}</span>
+    </label>
   `).join('');
 }
 

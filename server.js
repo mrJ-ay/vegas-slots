@@ -131,6 +131,32 @@ app.get('/api/state', requireAuth, async (req, res) => {
 // ---------- 게임 ----------
 app.post('/api/spin', requireAuth, async (req, res) => res.json(await spin(req.user.id, req.body?.bet)));
 
+// ---------- 자켓마트 스킬 체크박스 ON/OFF 토글 & 수량 조절 ----------
+app.post('/api/jarket/toggle-buff', requireAuth, async (req, res) => {
+  try {
+    const { itemId, isActive, activeQty } = req.body || {};
+    if (!itemId) return res.status(400).json({ error: 'itemId 필요' });
+
+    if (activeQty !== undefined) {
+      await q(
+        `UPDATE jk_inventory SET is_active = $1, active_qty = $2 WHERE user_id = $3 AND item_id = $4`,
+        [isActive ?? true, Math.max(1, Number(activeQty) || 1), req.user.id, itemId]
+      );
+    } else {
+      await q(
+        `UPDATE jk_inventory SET is_active = $1 WHERE user_id = $2 AND item_id = $3`,
+        [isActive ?? true, req.user.id, itemId]
+      );
+    }
+
+    const jarketBuffs = await getJarketBuffs({ query: q }, req.user.id);
+    res.json({ ok: true, jarketBuffs });
+  } catch (err) {
+    console.error('[Toggle Buff Error]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/bankrupt', requireAuth, async (req, res) => {
   const ev = [];
   await tx(async c => {
