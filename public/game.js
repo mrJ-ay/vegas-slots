@@ -248,21 +248,26 @@ async function spin() {
   if (res.win > 0) {
     showWins(res.wins);
     const ratio = res.win / b;
-    let buffNote = '';
-    if (res.buffs?.multiplier > 1.0 && res.baseWin > 0) {
-      buffNote += ` (자켓 x${res.buffs.multiplier}배)`;
-    }
-    if (res.buffs?.flatBonus > 0) {
-      buffNote += ` +$${res.buffs.flatBonus}`;
-    }
+    let buffNotes = [];
+    if (res.buffs?.multiplier > 1.0) buffNotes.push(`x${res.buffs.multiplier}배 당첨`);
+    if (res.buffs?.flatBonus > 0) buffNotes.push(`+$${res.buffs.flatBonus} 칩`);
+    const buffStr = buffNotes.length ? ` (자켓 동시스킬: ${buffNotes.join(' · ')})` : '';
 
     if (res.jackpotWon) { flash(`🎰 JACKPOT!!! ${money(res.win)} 🎰`, 'win'); bigWin('JACKPOT'); sfx.big(); coins(80); }
-    else if (ratio >= 15) { flash(`BIG WIN! +${money(res.win)}${buffNote}`, 'win'); bigWin(ratio >= 50 ? 'MEGA WIN' : 'BIG WIN'); sfx.big(); coins(ratio >= 50 ? 60 : 30); }
-    else { flash(`WIN +${money(res.win)}${buffNote}`, 'win'); sfx.win(); }
+    else if (ratio >= 15) { flash(`BIG WIN! +${money(res.win)}${buffStr}`, 'win'); bigWin(ratio >= 50 ? 'MEGA WIN' : 'BIG WIN'); sfx.big(); coins(ratio >= 50 ? 60 : 30); }
+    else { flash(`WIN +${money(res.win)}${buffStr}`, 'win'); sfx.win(); }
     if (res.seized > 0) { toast(`🥊 연체 중이라 당첨금 중 ${money(res.seized)} 자동 압류`, 'bad'); pendingRefresh = true; }
   } else {
+    let lossNotes = [];
     if (res.buffs?.insuranceRefund > 0) {
-      flash(`🧻 [자켓 꽝 보험] 베팅금의 ${Math.round(res.buffs.lossShieldRate * 100)}% (+${money(res.buffs.insuranceRefund)}) 환급!`, 'win');
+      lossNotes.push(`🛡️ 꽝 보험 ${Math.round(res.buffs.lossShieldRate * 100)}% (+${money(res.buffs.insuranceRefund)}) 환급`);
+    }
+    if (res.buffs?.flatBonus > 0) {
+      lossNotes.push(`+$${res.buffs.flatBonus} 칩`);
+    }
+
+    if (lossNotes.length) {
+      flash(`[자켓 동시 실드] ${lossNotes.join(' · ')}!`, 'win');
       sfx.cash();
     } else {
       flash(LOSE_LINES[rand(0, LOSE_LINES.length - 1)], 'lose'); sfx.lose();
