@@ -245,20 +245,41 @@ async function spin() {
 
   S.me.balance = res.balance;
   S.me.spins++;
-  S.jackpot = res.jackpot;
   if (res.win > 0) {
     showWins(res.wins);
     const ratio = res.win / b;
+    let buffNote = '';
+    if (res.buffs?.multiplier > 1.0 && res.baseWin > 0) {
+      buffNote += ` (자켓 x${res.buffs.multiplier}배)`;
+    }
+    if (res.buffs?.flatBonus > 0) {
+      buffNote += ` +$${res.buffs.flatBonus}`;
+    }
+
     if (res.jackpotWon) { flash(`🎰 JACKPOT!!! ${money(res.win)} 🎰`, 'win'); bigWin('JACKPOT'); sfx.big(); coins(80); }
-    else if (ratio >= 15) { flash(`BIG WIN! +${money(res.win)}`, 'win'); bigWin(ratio >= 50 ? 'MEGA WIN' : 'BIG WIN'); sfx.big(); coins(ratio >= 50 ? 60 : 30); }
-    else { flash(`WIN +${money(res.win)}`, 'win'); sfx.win(); }
+    else if (ratio >= 15) { flash(`BIG WIN! +${money(res.win)}${buffNote}`, 'win'); bigWin(ratio >= 50 ? 'MEGA WIN' : 'BIG WIN'); sfx.big(); coins(ratio >= 50 ? 60 : 30); }
+    else { flash(`WIN +${money(res.win)}${buffNote}`, 'win'); sfx.win(); }
     if (res.seized > 0) { toast(`🥊 연체 중이라 당첨금 중 ${money(res.seized)} 자동 압류`, 'bad'); pendingRefresh = true; }
   } else {
-    flash(LOSE_LINES[rand(0, LOSE_LINES.length - 1)], 'lose'); sfx.lose();
+    if (res.buffs?.insuranceRefund > 0) {
+      flash(`🧻 [자켓 꽝 보험] 베팅금의 ${Math.round(res.buffs.lossShieldRate * 100)}% (+${money(res.buffs.insuranceRefund)}) 환급!`, 'win');
+      sfx.cash();
+    } else {
+      flash(LOSE_LINES[rand(0, LOSE_LINES.length - 1)], 'lose'); sfx.lose();
+    }
+  }
+
+  if (res.buffs?.resurrected) {
+    toast(`🍖 [매머드 부활 실드] 파산 방지! +$5,000 칩 긴급 충전!`, 'hot');
+    sfx.big();
   }
 
   spinning = false;
   setControls(true);
+  if (res.buffs?.activeBuffs) {
+    if (!S.jarketBuffs) S.jarketBuffs = {};
+    S.jarketBuffs.activeBuffs = res.buffs.activeBuffs;
+  }
   if (pendingRefresh) await loadState().catch(console.error); else renderAll();
 
   if ($('autoSpin').checked) {
@@ -304,6 +325,25 @@ function renderWallet() {
   bb.textContent = m.bankruptCooldownMs > 0
     ? `💀 파산 신청 대기 (${Math.ceil(m.bankruptCooldownMs / 60000)}분)`
     : '💀 파산 신청 ($1,000 재시작, 빚은 유지)';
+
+  if (S.jarketBuffs) renderJarketBuffs(S.jarketBuffs);
+}
+
+function renderJarketBuffs(buffs) {
+  const container = $('jarketBuffTags');
+  if (!container) return;
+  if (!buffs || !buffs.activeBuffs || !buffs.activeBuffs.length) {
+    container.innerHTML = `<span class="no-buff-tag">보유 버프 없음 (자켓마트에서 아이템을 구매하면 슬롯 배율 최대 10배, 매 스핀 칩 추가, 꽝 환급 보험이 상시 발동됩니다!) <a href="https://jarket.onrender.com" target="_blank" style="color:var(--gold);text-decoration:underline;margin-left:4px;">[쇼핑하러 가기 ↗]</a></span>`;
+    return;
+  }
+
+  container.innerHTML = buffs.activeBuffs.map(b => `
+    <span class="jarket-buff-chip" title="${esc(b.name)}">
+      <span class="buff-chip-icon">${b.icon}</span>
+      <b class="buff-chip-name">${esc(b.name)}</b>
+      <span class="buff-chip-desc">${esc(b.desc)}</span>
+    </span>
+  `).join('');
 }
 
 function loanCard(l, side) {

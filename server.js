@@ -16,6 +16,7 @@ import {
   GameError, owedNow, lenderLabel, npcStatus, borrowNpc, repay,
   createOffer, cancelOffer, acceptOffer, overdueSweep,
 } from './lib/loans.js';
+import { getJarketBuffs } from './lib/jarketBuffs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 5504);
@@ -105,6 +106,8 @@ app.get('/api/state', requireAuth, async (req, res) => {
   const cooldownLeft = me.last_bankrupt_at
     ? Math.max(0, ECON.BANKRUPT_COOLDOWN_MIN * 60_000 - (now - new Date(me.last_bankrupt_at).getTime())) : 0;
 
+  const jarketBuffs = await getJarketBuffs({ query: q }, uid);
+
   res.json({
     me: {
       id: me.id, name: me.name, balance: me.balance, credit: me.credit, spins: me.spins,
@@ -121,6 +124,7 @@ app.get('/api/state', requireAuth, async (req, res) => {
     npc: NPC_LENDERS.map(n => ({ id: n.id, ...npcStatus(n, me, activeNpc) })),
     myRank: board.ranks.get(uid) || null,
     online: onlineCount(),
+    jarketBuffs,
   });
 });
 

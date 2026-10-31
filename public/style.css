@@ -363,3 +363,70 @@ input[type=range] { width: 100%; margin: 14px 0 6px; accent-color: var(--pink); 
 .toast.win { border-color: var(--gold); box-shadow: 0 0 14px rgba(255,210,63,.5); }
 .toast.bad { border-color: var(--red); box-shadow: 0 0 14px rgba(255,59,92,.5); }
 .rank-list li .badge { flex-shrink: 0; }
+
+/* ---------- 자켓마트 아이템 스킬 버프 위젯 ---------- */
+.jarket-buff-status {
+  margin: 12px 14px 0;
+  padding: 10px 14px;
+  background: rgba(20, 5, 35, 0.85);
+  border: 1px solid rgba(255, 210, 63, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 0 14px rgba(255, 210, 63, 0.15), inset 0 0 8px rgba(0, 0, 0, 0.4);
+  text-align: left;
+}
+.buff-status-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.buff-title {
+  font-family: 'Bungee', 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 6px rgba(255, 210, 63, 0.5);
+}
+.buff-shop-link {
+  font-size: 11px;
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.buff-shop-link:hover {
+  text-shadow: 0 0 8px var(--cyan);
+}
+.buff-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.no-buff-tag {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.jarket-buff-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 210, 63, 0.12);
+  border: 1px solid rgba(255, 210, 63, 0.4);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(255, 210, 63, 0.2);
+}
+.buff-chip-icon {
+  font-size: 13px;
+}
+.buff-chip-name {
+  color: var(--gold);
+  font-weight: 700;
+}
+.buff-chip-desc {
+  color: #e2e8f0;
+  font-size: 10px;
+}
